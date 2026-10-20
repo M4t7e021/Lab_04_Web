@@ -23,10 +23,17 @@ app.get('/api/info', (req, res) => {
         integrantes: [
             {
                 nombre: "Matteo Castaneda",
-                carnet: "00000021",
+                carnet: "00030123",
                 ciudad: "Mejicanos",
                 carrera: "Ingeniería Informática",
                 proyectosRealizados: 5
+            },
+            {
+                nombre: "Fernando Serpas",
+                carnet: "00087325",
+                ciudad: "Armenia",
+                carrera: "Ingeniería Informática",
+                proyectosRealizados: 4
             }
         ]
     });

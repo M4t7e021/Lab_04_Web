@@ -1,122 +1,80 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import React, { useState, useEffect } from 'react';
+import { Container, Row, Col, Card, CardBody, CardTitle, CardText, Badge } from 'reactstrap';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [healthMessage, setHealthMessage] = useState('');
+  const [infoData, setInfoData] = useState(null);
+
+  useEffect(() => {
+    // Apuntamos al puerto 4000 que configuró tu compañero
+    fetch('http://localhost:4000/api/health')
+      .then(res => res.json())
+      .then(data => setHealthMessage(data.message))
+      .catch(err => console.error("Error en health:", err));
+
+    fetch('http://localhost:4000/api/info')
+      .then(res => res.json())
+      .then(data => setInfoData(data))
+      .catch(err => console.error("Error en info:", err));
+  }, []);
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
+    <Container className="py-5">
+      {/* PUNTO 3: Título */}
+      <div className="text-center mb-5">
+        <h1 className="display-4 fw-bold text-primary">Taller IV</h1>
+        <p className="text-muted">Programación Web - Ciclo 02, 2026</p>
+      </div>
+
+      {/* PUNTO 4: Endpoint /api/health */}
+      <section className="p-4 mb-5 bg-light rounded shadow-sm border">
         <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
+          <h4 className="text-success fw-bold">Estado del Servidor (/api/health)</h4>
+          <p className="fs-5 mb-0 text-secondary">
+            Mensaje: <strong>{healthMessage || "Cargando..."}</strong>
           </p>
         </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
       </section>
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
+      {/* PUNTO 5: Endpoint /api/info */}
+      <section className="mt-4">
+        <h3 className="mb-4 text-dark border-bottom pb-2">Información de los Integrantes (/api/info)</h3>
+        <Row>
+          {infoData && infoData.integrantes ? (
+            infoData.integrantes.map((persona, index) => (
+              <Col sm="12" md="6" key={index} className="mb-4">
+                <Card className="shadow-sm h-100 border-0 bg-white border-top border-primary border-3">
+                  <CardBody>
+                    <CardTitle tag="h5" className="text-primary fw-bold mb-3">
+                      {persona.nombre}
+                    </CardTitle>
+                    <CardText className="mb-2">
+                      <strong>Carnet:</strong> {persona.carnet}
+                    </CardText>
+                    <CardText className="mb-2">
+                      {/* Ojo aquí: usamos 'persona.ciudad' tal como lo escribió tu compañero */}
+                      <strong>Ciudad de origen:</strong> {persona.ciudad}
+                    </CardText>
+                    <CardText className="mb-2">
+                      <strong>Carrera:</strong> {persona.carrera}
+                    </CardText>
+                    <CardText className="mb-0 mt-3">
+                      <strong>Proyectos realizados:</strong>{" "}
+                      <Badge color="success" pill className="px-3 py-2 fs-6">
+                        {persona.proyectosRealizados}
+                      </Badge>
+                    </CardText>
+                  </CardBody>
+                </Card>
+              </Col>
+            ))
+          ) : (
+            <p className="text-muted">Cargando datos del servidor...</p>
+          )}
+        </Row>
       </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+    </Container>
+  );
 }
 
-export default App
+export default App;
